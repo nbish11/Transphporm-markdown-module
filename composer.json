@@ -3,7 +3,7 @@
 	"description": "A markdown module for Transphporm.",
 	"type": "library",
 	"require": {
-		"level-2/transphporm": "^1.5",
+		"nbish11/transphporm": "^2.0.1",
 		"league/commonmark": "^2.2"
 	},
 	"require-dev": {
