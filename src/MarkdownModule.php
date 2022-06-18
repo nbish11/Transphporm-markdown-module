@@ -4,35 +4,28 @@ declare(strict_types=1);
 
 namespace nbish11\Transphporm;
 
-use nbish11\Transphporm\MarkdownFormat;
+use nbish11\Transphporm\MarkdownFunction;
 use Transphporm\Config;
 use Transphporm\Module;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
-use League\CommonMark\MarkdownConverter;
 
 final class MarkdownModule implements Module
 {
-	private $converter;
+	private $env;
 
-	public function __construct(MarkdownConverter $converter = null)
+	public function __construct(Environment $env = null)
 	{
-		if ($converter === null) {
-			$converter = $this->createDefaultConverter();
-		}
-
-		$this->converter = $converter;
+		$this->env = $env ?: $this->createDefaultEnvironment();
 	}
 
 	public function load(Config $config)
 	{
-		$markdownFormat = new MarkdownFormat($this->converter, $config);
-
-		$config->registerFormatter($markdownFormat);
+		$config->getFunctionSet()->addFunction('markdown', new MarkdownFunction($this->env));
 	}
 
-	private function createDefaultConverter(): MarkdownConverter
+	private function createDefaultEnvironment()
 	{
 		$environment = new Environment([
 			'html_input' => 'strip',
@@ -42,6 +35,6 @@ final class MarkdownModule implements Module
 		$environment->addExtension(new CommonMarkCoreExtension());
 		$environment->addExtension(new GithubFlavoredMarkdownExtension());
 
-		return new MarkdownConverter($environment);
+		return $environment;
 	}
 }
